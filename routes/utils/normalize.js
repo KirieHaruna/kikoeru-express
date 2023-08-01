@@ -9,9 +9,11 @@ const normalize = (works, options = {}) => {
     record.rank = record.rank ? JSON.parse(record.rank) : null;
     record.vas = JSON.parse(record.vaObj)['vas'];
     record.tags = JSON.parse(record.tagObj)['tags'];
+    record.history = record.hisObj ? JSON.parse(record.hisObj)['history'] : null;
     delete record.circleObj;
     delete record.vaObj;
     delete record.tagObj;
+    delete record.hisObj;
     if (options.dateOnly && record.updated_at) {
       record.updated_at = strftime('%F', record.updated_at);
     }

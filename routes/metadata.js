@@ -52,6 +52,37 @@ router.get('/work/:id',
       .catch(err => next(err));
   });
 
+  router.get('/history',
+  (req, res, next) => {
+    if(!isValidRequest(req, res)) return;
+
+    let username = 'admin';
+    if (config.auth) {
+      username = req.user.name;
+    }
+    db.knex('t_history')  
+    .select('t_history.hash', 't_history.play_time', 't_history.track_name', 't_work.id', 't_work.title')
+    .leftJoin('t_work', 't_history.work_id', 't_work.id')    
+    .where({
+      user_name: username,
+    })
+    .orderBy('t_history.updateTime', 'desc')
+    .limit(20)
+    .then((history) => {
+      res.send(history);
+    })
+    .catch((error) => {
+      console.error('查询历史记录失败:', error);
+    }).catch(err => next(err));
+    // db.getWorkMetadata(req.params.id, username)
+    //   .then(work => {
+    //     // work is an Array of length 1
+    //     normalize(work);
+    //     res.send(work[0]);
+    //   })
+    //   .catch(err => next(err));
+  });
+
 // GET track list in work folder
 router.get('/tracks/:id',
   param('id').isInt(),

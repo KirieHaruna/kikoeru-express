@@ -112,6 +112,50 @@ router.get('/download/:id/:index',
       });
 });
 
+router.get('/history/:username/:id',
+  param('username').isString(),
+  param('id').isInt(),
+  (req, res, next) => {
+    if(!isValidRequest(req, res)) return;
+
+    db.knex('t_history').select('hash', 'play_time')
+    .where({
+      user_name: req.params.username,
+      work_id: req.params.id
+    })
+    .then((history) => {
+      res.send(history);
+    })
+    .catch((error) => {
+      console.error('查询历史记录失败:', error);
+    }).catch(err => next(err));
+});
+
+router.post('/history',(req, res, next) => {
+  if(!isValidRequest(req, res)) return;
+    try {
+      db.knex('t_history').insert({
+        user_name:req.body.username, 
+        work_id: req.body.id, 
+        hash: req.body.hash, 
+        play_time: req.body.play_time,
+        track_name: req.body.track_name,
+        updateTime: db.knex.fn.now()
+      })
+      .onConflict(['user_name', 'work_id']) // 指定复合主键的列名
+      .merge() // 合并冲突
+      .then(() => {
+        // console.log('UPSERT success');
+        res.send({result: true, message:'UPSERT success'});
+      })
+      .catch((error) => {
+        console.error('UPSERT failed:', error);
+      }).catch(err => next(err));
+    }catch(err) {
+      next(err);
+    }
+  });
+
 router.get('/check-lrc/:id/:index',
   param('id').isInt(),
   param('index').isInt(),
