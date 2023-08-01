@@ -3,6 +3,18 @@
 
 [![unstable build status](https://github.com/umonaca/kikoeru-express/actions/workflows/build-artifacts.yml/badge.svg)](https://github.com/umonaca/kikoeru-express/actions)
 
+### 对比kikoeru-project/kikoeru-express的更新内容
+- 主界面更换为暗色
+- 支持8位RJ号
+- 排序支持按有字幕新作和添加时间排序
+- 增加无图模式
+- 增加播放历史记录功能
+- 增加是否显示lrc文件功能（关闭不影响字幕显示）
+
+### 唯一指定部署方式：
+- 请使用docker pull kirieharuna/kikoeru:latest
+
+
 ### 功能介绍
 - 从 DLSite 爬取音声元数据
 - 对音声标记进度、打星、写评语
@@ -12,24 +24,24 @@
 - 支持在 Web 端修改配置文件和扫描音声库
 - 支持为音声库添加多个根文件夹
 
-### 源码安装部署
-将kikoeru-quasar项目生成的SPA或PWA文件夹全部文件置于`dist`文件夹下，确保`dist/index.html`存在，然后：
-```bash
-# 安装依赖
-npm install
+### ~~源码安装部署~~
+~~将kikoeru-quasar项目生成的SPA或PWA文件夹全部文件置于`dist`文件夹下，确保`dist/index.html`存在，然后：~~
+~~```bash~~
+~~# 安装依赖~~
+~~npm install~~
 
-# 启动服务器
-npm start
+~~# 启动服务器~~
+~~npm start~~
 
-# Express listening on http://[::]:8888
-```
-关于选择PWA还是SPA：  
-区别仅仅在于有无Service Worker，由于Service Worker只能在本地和HTTPS上运行，因此如果远程以HTTP方式打开，PWA和SPA二者没有任何区别。也就是说，如果Kikoeru的主要用途是在移动设备上局域网播放，并且您没有配置HTTPS证书，那么实际上打开的都是SPA。  
-PWA的优点：基本页面零延迟，可以像手机APP一样通过浏览器“添加到桌面”的方式安装成App。作者自己使用的前端版本。  
-缺点：更新新版本时需要至少多刷新一次。  
+~~# Express listening on http://[::]:8888~~
+~~```~~
+~~关于选择PWA还是SPA：~~  
+~~区别仅仅在于有无Service Worker，由于Service Worker只能在本地和HTTPS上运行，因此如果远程以HTTP方式打开，PWA和SPA二者没有任何区别。也就是说，如果Kikoeru的主要用途是在移动设备上局域网播放，并且您没有配置HTTPS证书，那么实际上打开的都是SPA。~~  
+~~PWA的优点：基本页面零延迟，可以像手机APP一样通过浏览器“添加到桌面”的方式安装成App。作者自己使用的前端版本。~~  
+~~缺点：更新新版本时需要至少多刷新一次。~~  
 
-本项目还有打包好的 **Windows 系统下可用的 exe 可执行文件**与 **docker 镜像**版本，docker镜像及docker-compose的使用说明详见[**用户文档**](https://github.com/umonaca/kikoeru-express/wiki/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)  
-使用docker-compose只需调整`docker-compose.yml`内的挂载位置以符合您的存储路径即可。
+~~本项目还有打包好的 **Windows 系统下可用的 exe 可执行文件**与 **docker 镜像**版本，docker镜像及docker-compose的使用说明详见[**用户文档**](https://github.com/umonaca/kikoeru-express/wiki/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)  
+使用docker-compose只需调整`docker-compose.yml`内的挂载位置以符合您的存储路径即可。~~
 
 ### 技术栈
 - axios (网络请求)
