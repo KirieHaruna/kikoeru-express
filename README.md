@@ -11,7 +11,7 @@
 - 增加播放历史记录功能
 - 增加是否显示lrc文件功能（关闭不影响字幕显示）
 
-### 唯一指定部署方式：
+### 唯一指定部署方式
 - 请使用docker pull kirieharuna/kikoeru:latest
 
 
