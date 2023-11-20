@@ -7,7 +7,7 @@ FROM node:14-alpine as build-dep
 # Create app directory
 WORKDIR /usr/src/kikoeru
 
-RUN apk update && apk add python make gcc g++ 
+RUN apk update && apk add python3 make gcc g++ 
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -26,8 +26,8 @@ RUN npm install -g @quasar/cli
 ARG FRONTEND_VERSION="unstable"
 # Workaround docker cache
 # https://stackoverflow.com/questions/36996046/how-to-prevent-dockerfile-caching-git-clone
-ADD https://api.github.com/repos/kikoeru-project/kikoeru-quasar/git/refs/heads/unstable /tmp/version.json
-RUN git clone -b ${FRONTEND_VERSION} https://github.com/kikoeru-project/kikoeru-quasar.git .
+ADD https://api.github.com/repos/KirieHaruna/kikoeru-quasar/git/refs/heads/unstable /tmp/version.json
+RUN git clone -b ${FRONTEND_VERSION} https://github.com/KirieHaruna/kikoeru-quasar.git .
 RUN npm ci
 RUN quasar build && quasar build -m pwa
 

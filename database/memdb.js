@@ -1,5 +1,8 @@
 const Redis = require('redis');
-const client = new Redis.createClient();
+const client = new Redis.createClient({    
+    url: 'redis://redisearch:6379'
+}
+);
 client.on('error', (err) => {
     if (!useable) return;
     console.error(err);
