@@ -3,11 +3,11 @@ const express = require('express');
 const router = express.Router();
 const { param, query} = require('express-validator');
 const db = require('../database/db');
+const memdb = require('../database/memdb');
 const { getTrackList, toTree } = require('../filesystem/utils');
 const { config } = require('../config');
 const normalize = require('./utils/normalize')
 const { isValidRequest } = require('./utils/validate');
-
 const PAGE_SIZE = config.pageSize || 12;
 
 // GET work cover image
@@ -74,13 +74,6 @@ router.get('/work/:id',
     .catch((error) => {
       console.error('查询历史记录失败:', error);
     }).catch(err => next(err));
-    // db.getWorkMetadata(req.params.id, username)
-    //   .then(work => {
-    //     // work is an Array of length 1
-    //     normalize(work);
-    //     res.send(work[0]);
-    //   })
-    //   .catch(err => next(err));
   });
 
 // GET track list in work folder
@@ -125,32 +118,51 @@ router.get('/works',
     const shuffleSeed = req.query.seed ? req.query.seed : 7;
     
     try {
+      let works = await memdb.getWorks(req.url);//从redis中获取数据
       const query = () => db.getWorksBy({username: username});
       const totalCount = await query().count('id as count');
 
-      let works = null;
-
-      if (order === 'random') {
+      if (memdb.useable && works&& works.length === PAGE_SIZE) {
+        works.sort((a, b) => a.index - b.index);
+        res.send({
+          works,
+          pagination: {
+            currentPage,
+            pageSize: PAGE_SIZE,
+            totalCount: totalCount[0]['count']
+          }
+        });
+      }else{
+        if (order === 'random') {
         // 随机排序+分页 hack
         works = await query().offset(offset).limit(PAGE_SIZE).orderBy(db.knex.raw('id % ?', shuffleSeed));
-      } else if (order === 'betterRandom') {
-        // 随心听专用，不支持分页
-        works = await query().limit(1).orderBy(db.knex.raw('random()'));
-      } else {
-        works = await query().offset(offset).limit(PAGE_SIZE).orderBy(order, sort)
-        .orderBy([{ column: 'release', order: 'desc'}, { column: 'id', order: 'desc' }])
-      }
-
-      works = normalize(works);
-    
-      res.send({
-        works,
-        pagination: {
-          currentPage,
-          pageSize: PAGE_SIZE,
-          totalCount: totalCount[0]['count']
+        } else if (order === 'betterRandom') {
+          // 随心听专用，不支持分页
+          works = await query().limit(1).orderBy(db.knex.raw('random()'));
+        } else {
+          works = await query().offset(offset).limit(PAGE_SIZE).orderBy(order, sort)
+          .orderBy([{ column: 'release', order: 'desc'}, { column: 'id', order: 'desc' }])
         }
-      });
+
+        works = normalize(works);
+        if (memdb.useable) {
+          for (let i = 0; i < works.length; i++) {
+            const work = works[i];
+            work['index'] = i;
+            work['url'] = req.url;
+            memdb.setWork(work);
+          }
+        }
+
+        res.send({
+          works,
+          pagination: {
+            currentPage,
+            pageSize: PAGE_SIZE,
+            totalCount: totalCount[0]['count']
+          }
+        })
+      ;}
     } catch(err) {
       res.status(500).send({error: '服务器错误'});
       console.error(err)

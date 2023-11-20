@@ -75,6 +75,7 @@
     "md5": "^2.3.0",
     "natural-orderby": "^2.0.3",
     "recursive-readdir": "^2.2.2",
+    "redis": "^4.6.10",
     "socket.io": "^2.4.1",
     "socketio-jwt-auth": "^0.2.1",
     "sqlite3": "~5.0.2",

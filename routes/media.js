@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { config } = require('../config');
 const db = require('../database/db');
+const memdb = require('../database/memdb');
 const { param } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
@@ -145,12 +146,12 @@ router.post('/history',(req, res, next) => {
       .onConflict(['user_name', 'work_id']) // 指定复合主键的列名
       .merge() // 合并冲突
       .then(() => {
-        // console.log('UPSERT success');
         res.send({result: true, message:'UPSERT success'});
       })
       .catch((error) => {
         console.error('UPSERT failed:', error);
       }).catch(err => next(err));
+      memdb.setHistory(req.body);
     }catch(err) {
       next(err);
     }

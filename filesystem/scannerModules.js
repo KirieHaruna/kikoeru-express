@@ -5,6 +5,7 @@ const LimitPromise = require('limit-promise'); // 限制并发数量
 const axios = require('../scraper/axios.js'); // 数据请求
 const { scrapeWorkMetadataFromDLsite, scrapeDynamicWorkMetadataFromDLsite } = require('../scraper/dlsite');
 const db = require('../database/db');
+const memdb = require('../database/memdb');
 const { createSchema } = require('../database/schema');
 const { getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk } = require('./utils');
 const { md5 } = require('../auth/utils');
@@ -427,6 +428,7 @@ const performCleanup = async () => {
  * createCoverFolder => createSchema => cleanup => getAllFolderList => processAllFolder
  */
 const performScan = () => {
+  memdb.drop(); // 删除内存数据库的数据
   if (!fs.existsSync(config.coverFolderDir)) {
     try {
       fs.mkdirSync(config.coverFolderDir, { recursive: true });
