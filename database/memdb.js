@@ -1,8 +1,7 @@
 const Redis = require('redis');
 const client = new Redis.createClient({    
-    url: 'redis://redisearch:6379'
-}
-);
+    url: 'redis://127.0.0.1:6379'
+});
 client.on('error', (err) => {
     if (!useable) return;
     console.error(err);
@@ -84,12 +83,15 @@ const setHistory = async (body) => {
     try{
         //取得work:${body.id}的值
         let work = await client.json.get(`work:${body.id}`, '$');
+        if(work === null){
+            return;
+        }
         let newValue = [{
             play_time: body.play_time,
             user_name: body.username,
             track_name: body.track_name
         }];
-        if(!work.history){
+        if(work.history === null){
             await client.json.set(`work:${body.id}`, `$.history`, newValue);
         }else{
             for(let i = 0; i < work.history.length; i++){
